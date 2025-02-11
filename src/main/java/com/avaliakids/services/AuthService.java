@@ -17,9 +17,9 @@ public class AuthService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public AuthService(UserRepository userRepository, JwtUtil jwtUtil) {
+    public AuthService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
-        this.passwordEncoder = new BCryptPasswordEncoder();
+        this.passwordEncoder = passwordEncoder;  // Agora a injeção acontece no construtor
         this.jwtUtil = jwtUtil;
     }
 
@@ -36,7 +36,7 @@ public class AuthService {
         User user = new User();
         user.setName(name);
         user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(password));
+        user.setPassword(passwordEncoder.encode(password));  // Senha criptografada
         user.setRole(role.toUpperCase().trim());
 
         return userRepository.save(user);
@@ -52,5 +52,21 @@ public class AuthService {
 
     public String generateToken(String email) {
         return jwtUtil.generateToken(email);
+    }
+
+    /**
+     * 🔹 Valida a senha do responsável (PARENT)
+     * @param parentId - ID do usuário responsável
+     * @param password - Senha digitada pelo responsável
+     * @return true se a senha estiver correta, false caso contrário
+     */
+    public boolean validateParentPassword(String parentId, String password) {
+        Optional<User> userOpt = userRepository.findById(parentId);
+        if (userOpt.isEmpty()) {
+            return false; // Usuário não encontrado
+        }
+
+        User user = userOpt.get();
+        return passwordEncoder.matches(password, user.getPassword()); // Verifica se a senha está correta
     }
 }

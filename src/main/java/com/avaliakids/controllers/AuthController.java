@@ -51,5 +51,18 @@ public class AuthController {
         } else {
             return ResponseEntity.status(401).body(Map.of("message", "Credenciais inválidas."));
         }
-    }    
+    }
+
+    @PostMapping("/validate-password")
+    public ResponseEntity<?> validateParentPassword(@RequestBody Map<String, String> requestBody) {
+        String parentId = requestBody.get("parentId");
+        String password = requestBody.get("password");
+
+        boolean isValid = authService.validateParentPassword(parentId, password);
+        if (!isValid) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Senha incorreta."));
+        }
+
+        return ResponseEntity.ok(Map.of("isValid", true));
+    }
 }
