@@ -39,15 +39,17 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestParam String email, @RequestParam String password) {
         Optional<User> authenticatedUser = authService.authenticateUser(email, password);
         if (authenticatedUser.isPresent()) {
+            User user = authenticatedUser.get();
             String token = authService.generateToken(email);
-            String name = authenticatedUser.get().getName();
     
             return ResponseEntity.ok(Map.of(
                 "token", token,
-                "name", name
+                "userId", user.getId(),
+                "name", user.getName(),
+                "role", user.getRole()
             ));
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Credenciais inválidas."));
+            return ResponseEntity.status(401).body(Map.of("message", "Credenciais inválidas."));
         }
-    }
+    }    
 }

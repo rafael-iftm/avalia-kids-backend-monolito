@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 public class StudentService {
@@ -40,25 +41,34 @@ public class StudentService {
         }
     
         return classYear + "º Ano";
-    }    
+    }
 
-    public Student registerStudent(String name, String birthDate) {
+    public Student registerStudent(String name, String birthDate, String parentId) {
+        if (parentId == null || parentId.isEmpty()) {
+            throw new IllegalArgumentException("O aluno precisa estar vinculado a um responsável.");
+        }
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate birthDateParsed = LocalDate.parse(birthDate, formatter);
         int age = LocalDate.now().getYear() - birthDateParsed.getYear();
-    
+
         if (age < 5 || age > 12) {
             throw new IllegalArgumentException("A idade permitida para cadastro é entre 5 e 12 anos.");
         }
-    
+
         String className = calculateClass(birthDate);
-    
+
         Student student = new Student();
         student.setName(name);
         student.setBirthDate(birthDate);
         student.setClassName(className);
         student.setScore(null);
-    
+        student.setParentId(parentId);
+
         return studentRepository.save(student);
-    }    
+    }
+
+    public List<Student> getStudentsByParent(String parentId) {
+        return studentRepository.findByParentId(parentId);
+    }
 }

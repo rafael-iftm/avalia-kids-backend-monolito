@@ -5,7 +5,7 @@ import com.avaliakids.services.StudentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/students")
@@ -18,14 +18,22 @@ public class StudentController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerStudent(@RequestParam String name, @RequestParam String birthDate) {
+    public ResponseEntity<?> registerStudent(
+        @RequestParam String name,
+        @RequestParam String birthDate,
+        @RequestParam String parentId
+    ) {
         try {
-            Student student = studentService.registerStudent(name, birthDate);
+            Student student = studentService.registerStudent(name, birthDate, parentId);
             return ResponseEntity.ok(student);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("message", "Erro interno no servidor."));
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @GetMapping("/by-parent/{parentId}")
+    public ResponseEntity<List<Student>> getStudentsByParent(@PathVariable String parentId) {
+        List<Student> students = studentService.getStudentsByParent(parentId);
+        return ResponseEntity.ok(students);
     }
 }

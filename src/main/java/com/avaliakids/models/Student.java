@@ -12,6 +12,7 @@ public class Student {
     private String birthDate;
     private String className;
     private Integer score;
+    private String parentId;
 
     public String getId() {
         return id;
@@ -51,5 +52,13 @@ public class Student {
 
     public void setScore(Integer score) {
         this.score = score;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
     }
 }
