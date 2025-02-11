@@ -1,5 +1,7 @@
 package com.avaliakids.services;
 
+import com.avaliakids.exceptions.InvalidRoleException;
+import com.avaliakids.exceptions.UserAlreadyExistsException;
 import com.avaliakids.models.User;
 import com.avaliakids.repositories.UserRepository;
 import com.avaliakids.utils.JwtUtil;
@@ -23,12 +25,12 @@ public class AuthService {
 
     public User registerUser(String name, String email, String password, String role) {
         if (!(role.equalsIgnoreCase("PARENT") || role.equalsIgnoreCase("TEACHER"))) {
-            throw new IllegalArgumentException("Invalid role. Must be PARENT or TEACHER.");
+            throw new InvalidRoleException("O papel especificado é inválido. Deve ser PARENT ou TEACHER.");
         }
 
         Optional<User> existingUser = userRepository.findByEmail(email);
         if (existingUser.isPresent()) {
-            throw new IllegalArgumentException("User already registered.");
+            throw new UserAlreadyExistsException("O e-mail fornecido já está registrado.");
         }
 
         User user = new User();
