@@ -17,9 +17,9 @@ public class AuthService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public AuthService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+    public AuthService(UserRepository userRepository, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;  // Agora a injeção acontece no construtor
+        this.passwordEncoder = new BCryptPasswordEncoder();
         this.jwtUtil = jwtUtil;
     }
 
@@ -36,7 +36,7 @@ public class AuthService {
         User user = new User();
         user.setName(name);
         user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(password));  // Senha criptografada
+        user.setPassword(passwordEncoder.encode(password));
         user.setRole(role.toUpperCase().trim());
 
         return userRepository.save(user);
@@ -50,8 +50,8 @@ public class AuthService {
         return Optional.empty();
     }
 
-    public String generateToken(String email) {
-        return jwtUtil.generateToken(email);
+    public String generateToken(String email, String role) {
+        return jwtUtil.generateToken(email, role); // Agora passamos a role corretamente
     }
 
     /**

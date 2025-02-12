@@ -40,7 +40,7 @@ public class AuthController {
         Optional<User> authenticatedUser = authService.authenticateUser(email, password);
         if (authenticatedUser.isPresent()) {
             User user = authenticatedUser.get();
-            String token = authService.generateToken(email);
+            String token = authService.generateToken(user.getEmail(), user.getRole());
     
             return ResponseEntity.ok(Map.of(
                 "token", token,
@@ -51,7 +51,7 @@ public class AuthController {
         } else {
             return ResponseEntity.status(401).body(Map.of("message", "Credenciais inválidas."));
         }
-    }
+    }    
 
     @PostMapping("/validate-password")
     public ResponseEntity<?> validateParentPassword(@RequestBody Map<String, String> requestBody) {
