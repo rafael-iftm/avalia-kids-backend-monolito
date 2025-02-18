@@ -3,7 +3,7 @@ package com.avaliakids.models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "quiz_answers")
+@Document(collection = "quizzes")
 public class QuizAnswer {
 
     @Id
